@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/z4">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:text="AcelerometrO:"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="25dp"
+        android:paddingBottom="60dp"
+        android:id="@+id/textView2" />
+
+    <TextView
+        android:text="X-Axis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:textSize="15dp"
+        android:textColor="@android:color/white"
+        android:paddingBottom="35dp"
+        android:paddingLeft="30dp"/>
+
+    <TextView
+        android:id="@+id/textX"
+        android:textColor="@android:color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="0.0"
+        android:textSize="15dp"
+        android:paddingBottom="15dp"
+        android:paddingLeft="40dp"/>
+
+    <TextView
+        android:text="Y-Axis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="15dp"
+        android:textColor="@android:color/white"
+        android:paddingBottom="35dp" />
+
+    <TextView
+        android:id="@+id/textY"
+        android:textColor="@android:color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="0.0"
+        android:textSize="15dp"
+        android:paddingBottom="15dp" />
+
+    <TextView
+        android:text="Z-Axis"
+        android:textColor="@android:color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:paddingBottom="35dp"
+        android:paddingRight="40dp"
+        android:id="@+id/textView"
+        android:textSize="15dp" />
+    <TextView
+        android:id="@+id/textZ"
+        android:textColor="@android:color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="0.0"
+        android:paddingBottom="15dp"
+        android:paddingRight="50dp"  />
+
+    <Switch
+        android:textColor="@android:color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mySwitch"
+        android:layout_below="@+id/BT_IMG"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:checked="false" />
+
+    <ImageView
+        android:id="@+id/BT_IMG"
+        android:src="@drawable/bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/mySwitch"
+        android:layout_alignEnd="@+id/mySwitch" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Estado : "
+        android:textColor="@android:color/white"
+        android:paddingLeft="30dp" />
+
+    <ListView
+        android:textColor="@android:color/white"
+        android:id="@+id/listView1"
+        android:layout_width="450dp"
+        android:layout_height="190dp"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/textView2"
+        android:layout_toLeftOf="@+id/BT_IMG"
+        android:layout_toStartOf="@+id/BT_IMG">
+    </ListView>
+</RelativeLayout>
