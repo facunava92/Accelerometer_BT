@@ -107,7 +107,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Estado : "
+        android:text="Estado : - "
         android:textColor="@android:color/white"
         android:paddingLeft="30dp" />
 
