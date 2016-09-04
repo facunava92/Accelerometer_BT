@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
-        android:text="AcelerometrO:"
+        android:text="Acelerometro_Test:"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:textSize="25dp"
@@ -103,22 +103,34 @@
         android:layout_alignEnd="@+id/mySwitch" />
 
     <TextView
+        android:id="@+id/sta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Estado:"
+        android:textColor="@android:color/white"
+        android:paddingLeft="30dp" />
+
+    <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Estado : - "
+        android:text=" - "
         android:textColor="@android:color/white"
-        android:paddingLeft="30dp" />
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/sta"
+        android:layout_toEndOf="@+id/sta" />
+
 
     <ListView
-        android:textColor="@android:color/white"
         android:id="@+id/listView1"
         android:layout_width="450dp"
-        android:layout_height="190dp"
+        android:layout_height="120dp"
         android:layout_alignParentLeft="true"
-        android:layout_above="@+id/textView2"
         android:layout_toLeftOf="@+id/BT_IMG"
-        android:layout_toStartOf="@+id/BT_IMG">
+        android:layout_toStartOf="@+id/BT_IMG"
+        android:layout_below="@+id/text"
+        android:layout_above="@+id/textView2">
     </ListView>
 </RelativeLayout>
