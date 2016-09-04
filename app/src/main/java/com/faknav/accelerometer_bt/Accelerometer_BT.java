@@ -1,6 +1,5 @@
 package com.faknav.accelerometer_bt;
 
-
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -13,12 +12,15 @@ import android.content.Context;
 import android.os.Vibrator;
 import android.widget.TextView;
 
-
 /////Switch
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.view.Menu;
+
+//ImageButton
+import android.widget.ImageButton;
+import android.view.View;
+import android.view.View.OnClickListener;
 
 ///////Bluetooth
 import android.bluetooth.BluetoothAdapter;
@@ -35,7 +37,7 @@ public class Accelerometer_BT extends Activity {
     SensorManager sensorManager;
     Sensor accelerometer;
     Vibrator v;
-    float vibrateThreshold = 5;
+    float vibrateThreshold = 7;
 
     Switch mySwitch;
     ListView myListView;
@@ -44,8 +46,6 @@ public class Accelerometer_BT extends Activity {
 
     private static final int REQUEST_ENABLE_BT = 1;
 
-
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accelerometer__bt);
@@ -53,22 +53,25 @@ public class Accelerometer_BT extends Activity {
         mySwitch = (Switch) findViewById(R.id.mySwitch);
         text = (TextView) findViewById(R.id.text);
 
-        //set the switch to OFF
+        ImageButton imageButton;
+
+        //configuro el switch OFF
         mySwitch.setChecked(false);
-        // take an instance of BluetoothAdapter - Bluetooth radio
+        //inicializo el bluetooth
         myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(myBluetoothAdapter == null) {
-            text.setText("Status: not supported");
+            text.setText("BT NO SOPORTADO");
             Toast.makeText(getApplicationContext(),"Tu Dispositivo no tiene soporte para Bluetooth", Toast.LENGTH_LONG).show();
         }
 
-        else {   //attach a listener to check for changes in state
+        else {
+
+            //interrupcion a cambio de estado
             mySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked)
                     {
                         ON();
-                        FIND();
                         text.setText("Activado");
                         text.setTextColor(Color.GREEN);
                     }
@@ -80,25 +83,33 @@ public class Accelerometer_BT extends Activity {
                     }
                 }
             });
+
+            imageButton =(ImageButton) findViewById(R.id.imageButton1);
+            imageButton.setOnClickListener(new OnClickListener() {
+
+                public void onClick(View v) {
+                    FIND(v);
+                }
+            });
+
+            myListView = (ListView)findViewById(R.id.listView1);
+            // arreglo q contiene a BTDevices
+            BTArrayAdapter = new ArrayAdapter<String>(this, R.layout.list_fak);
+            myListView.setAdapter(BTArrayAdapter);
         }
 
-        myListView = (ListView)findViewById(R.id.listView1);
-
-        // create the arrayAdapter that contains the BTDevices, and set it to the ListView
-        BTArrayAdapter = new ArrayAdapter<String>(this, R.layout.list_fak);
-        myListView.setAdapter(BTArrayAdapter);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
-            // success! we have an accelerometer
+            // es verdadero si tengo acelerometro
 
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             sensorManager.registerListener(accelListener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         } else {
-            // fai! we dont have an accelerometer!
+            // no tengo acelerometro
         }
 
-        //initialize vibration
+        //incializa la vibracion
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
         textX = (TextView) findViewById(R.id.textX);
@@ -107,7 +118,6 @@ public class Accelerometer_BT extends Activity {
     }
 
     public void ON(){
-
 
         Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
@@ -120,37 +130,45 @@ public class Accelerometer_BT extends Activity {
         Toast.makeText(getApplicationContext(),"Bluetooth Apagado", Toast.LENGTH_LONG).show();
     }
 
-    final BroadcastReceiver bReceiver = new BroadcastReceiver() {
+
+    BroadcastReceiver bReceiver = new BroadcastReceiver()
+    {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            // When discovery finds a device
+            // Cuando discovery descubre un dispositivo
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Get the BluetoothDevice object from the Intent
+                // Obtiene BluetoothDevice del Intento
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // add the name and the MAC address of the object to the arrayAdapter
+                // Adhiere el nombre y MAC del BT encontrado
                 BTArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 BTArrayAdapter.notifyDataSetChanged();
             }
         }
     };
 
-
-    public void FIND() {
-
+    public void FIND(View view) {
+        if (myBluetoothAdapter.isDiscovering()) {
+            // Si se vuelve a apretar el bonton se reinicia la busqueda
+            myBluetoothAdapter.cancelDiscovery();
+        }
+        else {
+            BTArrayAdapter.clear();
             myBluetoothAdapter.startDiscovery();
+
             registerReceiver(bReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+        }
     }
 
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(bReceiver);
     }
-    //onResume() register the accelerometer for listening the events
+    //onResume() rregistro el acelerometro
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(accelListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(accelListener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
     }
-    //onPause() unregister the accelerometer for stop listening the events
+    //onPause() desregistro el acelerometro al estar en pausa, disminuye consumos
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(accelListener);
