@@ -1,26 +1,26 @@
 package com.faknav.accelerometer_bt;
 
+import android.app.Activity;
 import android.content.IntentFilter;
+import android.content.Context;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.app.Activity;
-import android.content.Context;
 import android.os.Vibrator;
 import android.widget.TextView;
 
 /////Switch
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Switch;
 
 //ImageButton
-import android.widget.ImageButton;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 
 ///////Bluetooth
 import android.bluetooth.BluetoothAdapter;
@@ -30,6 +30,11 @@ import android.widget.Toast;
 import android.content.Intent;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
+
+
+//Coneccion BT
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
 
 public class Accelerometer_BT extends Activity {
@@ -43,8 +48,13 @@ public class Accelerometer_BT extends Activity {
     ListView myListView;
     BluetoothAdapter myBluetoothAdapter;
     ArrayAdapter<String> BTArrayAdapter;
+    ImageButton imageButton;
+
 
     private static final int REQUEST_ENABLE_BT = 1;
+    public static String EXTRA_DEVICE_ADDRESS;
+    public static String EXTRA_DEVICE_NAME;
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,29 +63,23 @@ public class Accelerometer_BT extends Activity {
         mySwitch = (Switch) findViewById(R.id.mySwitch);
         text = (TextView) findViewById(R.id.text);
 
-        ImageButton imageButton;
-
         //configuro el switch OFF
         mySwitch.setChecked(false);
         //inicializo el bluetooth
         myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(myBluetoothAdapter == null) {
+        if (myBluetoothAdapter == null) {
             text.setText("BT NO SOPORTADO");
-            Toast.makeText(getApplicationContext(),"Tu Dispositivo no tiene soporte para Bluetooth", Toast.LENGTH_LONG).show();
-        }
-
-        else {
+            Toast.makeText(getApplicationContext(), "Tu Dispositivo no tiene soporte para Bluetooth", Toast.LENGTH_LONG).show();
+        } else {
 
             //interrupcion a cambio de estado
             mySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked)
-                    {
+                    if (isChecked) {
                         ON();
                         text.setText("Activado");
                         text.setTextColor(Color.GREEN);
-                    }
-                    else{
+                    } else {
                         OFF();
                         text.setText("Desactivado");
                         text.setTextColor(Color.RED);
@@ -84,7 +88,7 @@ public class Accelerometer_BT extends Activity {
                 }
             });
 
-            imageButton =(ImageButton) findViewById(R.id.imageButton1);
+            imageButton = (ImageButton) findViewById(R.id.imageButton1);
             imageButton.setOnClickListener(new OnClickListener() {
 
                 public void onClick(View v) {
@@ -92,9 +96,10 @@ public class Accelerometer_BT extends Activity {
                 }
             });
 
-            myListView = (ListView)findViewById(R.id.listView1);
             // arreglo q contiene a BTDevices
             BTArrayAdapter = new ArrayAdapter<String>(this, R.layout.list_fak);
+            myListView = (ListView) findViewById(R.id.listView1);
+            myListView.setOnItemClickListener(mDeviceClickListener);
             myListView.setAdapter(BTArrayAdapter);
         }
 
@@ -117,22 +122,21 @@ public class Accelerometer_BT extends Activity {
         textZ = (TextView) findViewById(R.id.textZ);
     }
 
-    public void ON(){
+    public void ON() {
 
         Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
         Toast.makeText(getApplicationContext(), "Bluetooth Encendido", Toast.LENGTH_LONG).show();
     }
 
-    public void OFF(){
+    public void OFF() {
         myBluetoothAdapter.disable();
 
-        Toast.makeText(getApplicationContext(),"Bluetooth Apagado", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Bluetooth Apagado", Toast.LENGTH_LONG).show();
     }
 
 
-    BroadcastReceiver bReceiver = new BroadcastReceiver()
-    {
+    BroadcastReceiver bReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             // Cuando discovery descubre un dispositivo
@@ -150,8 +154,7 @@ public class Accelerometer_BT extends Activity {
         if (myBluetoothAdapter.isDiscovering()) {
             // Si se vuelve a apretar el bonton se reinicia la busqueda
             myBluetoothAdapter.cancelDiscovery();
-        }
-        else {
+        } else {
             BTArrayAdapter.clear();
             myBluetoothAdapter.startDiscovery();
 
@@ -163,11 +166,15 @@ public class Accelerometer_BT extends Activity {
         super.onDestroy();
         unregisterReceiver(bReceiver);
     }
+
     //onResume() rregistro el acelerometro
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(accelListener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+
+
     }
+
     //onPause() desregistro el acelerometro al estar en pausa, disminuye consumos
     protected void onPause() {
         super.onPause();
@@ -175,23 +182,41 @@ public class Accelerometer_BT extends Activity {
     }
 
     SensorEventListener accelListener = new SensorEventListener() {
-        public void onAccuracyChanged(Sensor sensor, int acc) { }
+        public void onAccuracyChanged(Sensor sensor, int acc) {
+        }
 
         public void onSensorChanged(SensorEvent event) {
             float x = event.values[0];
             float y = event.values[1];
             float z = event.values[2];
 
-            textX.setText(String.format ("%.3f", x));
-            textY.setText(String.format ("%.3f", y));
-            textZ.setText(String.format ("%.3f", z));
+            textX.setText(String.format("%.3f", x));
+            textY.setText(String.format("%.3f", y));
+            textZ.setText(String.format("%.3f", z));
 
-            if ( Math.abs(y) > vibrateThreshold) {
-                v.vibrate(100);}
-
-
+            if (Math.abs(y) > vibrateThreshold) {
+                v.vibrate(100);
+            }
         }
+    };
 
+    private OnItemClickListener mDeviceClickListener = new OnItemClickListener()
+    {
+        public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3)
+        {
+
+            // Get the device MAC address, which is the last 17 chars in the View
+            String info = ((TextView) v).getText().toString();
+            String address = info.substring(info.length() - 17);
+            String name =  info.substring(0,info.length() - 17) ;
+
+
+            //Make an intent to start next activity while taking an extra which is the MAC address.
+            Intent i = new Intent(Accelerometer_BT.this, BT_Conn.class);
+            i.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            i.putExtra(EXTRA_DEVICE_NAME, name);
+            startActivity(i);
+        }
     };
 }
 

@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
 
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/z4">
@@ -120,8 +121,9 @@
         android:text=" - "
         android:textColor="@android:color/white"
         android:layout_toRightOf="@+id/sta"
-        android:layout_toEndOf="@+id/sta"
-        android:paddingLeft="5dp"/>
+        android:paddingLeft="5dp"
+        android:layout_toLeftOf="@+id/imageButton1"
+        android:layout_toStartOf="@+id/imageButton1" />
 
     <ListView
         android:id="@+id/listView1"
