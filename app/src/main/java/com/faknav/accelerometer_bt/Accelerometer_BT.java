@@ -52,8 +52,7 @@ public class Accelerometer_BT extends Activity {
 
 
     private static final int REQUEST_ENABLE_BT = 1;
-    public static String EXTRA_DEVICE_ADDRESS;
-    public static String EXTRA_DEVICE_NAME;
+    static final int BT_CONN_REQUEST = 1;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -109,7 +108,7 @@ public class Accelerometer_BT extends Activity {
             // es verdadero si tengo acelerometro
 
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(accelListener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+            sensorManager.registerListener(accelListener, accelerometer, 1000000);
         } else {
             // no tengo acelerometro
         }
@@ -170,7 +169,7 @@ public class Accelerometer_BT extends Activity {
     //onResume() rregistro el acelerometro
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(accelListener, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(accelListener, accelerometer, 1000000);
 
 
     }
@@ -195,7 +194,7 @@ public class Accelerometer_BT extends Activity {
             textZ.setText(String.format("%.3f", z));
 
             if (Math.abs(y) > vibrateThreshold) {
-                v.vibrate(100);
+                v.vibrate(1000);
             }
         }
     };
@@ -208,16 +207,34 @@ public class Accelerometer_BT extends Activity {
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();
             String address = info.substring(info.length() - 17);
-            String name =  info.substring(0,info.length() - 17) ;
+
+            // Get the device Name
+            String aux = ((TextView) v).getText().toString();
+            String name =  aux.substring(0,aux.length() - 17) ;
+
+            text.setText("Conectando a " + name + address);
+            text.setTextColor(Color.YELLOW);
 
 
             //Make an intent to start next activity while taking an extra which is the MAC address.
             Intent i = new Intent(Accelerometer_BT.this, BT_Conn.class);
-            i.putExtra(EXTRA_DEVICE_ADDRESS, address);
-            i.putExtra(EXTRA_DEVICE_NAME, name);
-            startActivity(i);
+            i.putExtra("Address", address);
+            i.putExtra("Name", name);
+            startActivityForResult(i,BT_CONN_REQUEST);
         }
     };
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK)
+        {
+            text.setText("Activado");
+            text.setTextColor(Color.GREEN);
+            BTArrayAdapter.clear();
+            myBluetoothAdapter.startDiscovery();
+
+        }
+    }
 }
 
 
